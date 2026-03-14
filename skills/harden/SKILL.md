@@ -1,6 +1,6 @@
 ---
 name: harden
-description: "Strengthen backend resilience by finding silent catches, missing error context, resource leaks, and operational fragility. Use when hardening error handling or preparing for production deployment. Triggers: 'harden code', 'check error handling', 'resilience review', or /assay:harden. Do NOT use for dead code — use assay:distill instead."
+description: "Strengthen backend resilience by finding silent catches, missing error context, resource leaks, and operational fragility. Use when hardening error handling or preparing for production deployment. Triggers: 'harden code', 'check error handling', 'resilience review', or /axiom:harden. Do NOT use for dead code — use axiom:distill instead."
 user-invokable: true
 metadata:
   author: lvlup-sw
@@ -17,7 +17,7 @@ metadata:
 
 Resilience-focused assessment skill covering DIM-2 (Observability) and DIM-7 (Resilience) from the backend quality dimension taxonomy. Finds error handling gaps, silent catches, resource leaks, and operational fragility that could cause cascading failures under stress.
 
-This skill combines deterministic pattern detection (via `assay:scan`) with qualitative judgment to assess how well code handles failure, communicates errors, and manages resources.
+This skill combines deterministic pattern detection (via `axiom:scan`) with qualitative judgment to assess how well code handles failure, communicates errors, and manages resources.
 
 ## Triggers
 
@@ -26,17 +26,17 @@ This skill combines deterministic pattern detection (via `assay:scan`) with qual
 Activate this skill when:
 - User says "harden code", "harden this", or "resilience review"
 - User says "check error handling" or "audit error handling"
-- User runs `/assay:harden`
+- User runs `/axiom:harden`
 - Preparing code for production deployment
 - After an incident exposed error handling gaps
 
 ### Negative Triggers
 
 Do NOT use this skill when:
-- Looking for dead code or vestigial patterns — use `assay:distill` instead
-- Reviewing architecture or SOLID compliance — use `assay:critique` instead
-- Checking test quality or mock fidelity — use `assay:verify` instead
-- Running a comprehensive audit — use `assay:audit` instead
+- Looking for dead code or vestigial patterns — use `axiom:distill` instead
+- Reviewing architecture or SOLID compliance — use `axiom:critique` instead
+- Checking test quality or mock fidelity — use `axiom:verify` instead
+- Running a comprehensive audit — use `axiom:audit` instead
 
 ## Process
 
@@ -48,7 +48,7 @@ Load the relevant dimensions from the shared taxonomy:
 
 ### Step 2: Run Deterministic Checks
 
-Invoke `assay:scan` for mechanical pattern detection on the Observability and Resilience dimensions:
+Invoke `axiom:scan` for mechanical pattern detection on the Observability and Resilience dimensions:
 
 - DIM-2 checks: empty catch blocks, log-only catches, swallowed promise rejections
 - DIM-7 checks: unbounded collections, missing timeouts, unbounded retry loops
@@ -138,7 +138,7 @@ Group findings by severity (HIGH, MEDIUM, LOW). Each finding must include:
 
 If the provided scope is empty or contains no files to analyze, return an informative message:
 
-> "No files found in the provided scope. Specify a file path, directory, or glob pattern. Example: `/assay:harden src/` or `/assay:harden src/events/`."
+> "No files found in the provided scope. Specify a file path, directory, or glob pattern. Example: `/axiom:harden src/` or `/axiom:harden src/events/`."
 
 Do not return an empty finding set without explanation.
 

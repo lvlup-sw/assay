@@ -1,6 +1,6 @@
 ---
 name: distill
-description: "Strip backend code to its essence by identifying dead code, vestigial patterns, and unnecessary complexity. Use when cleaning up after refactoring or reducing cognitive load. Triggers: 'simplify code', 'find dead code', 'clean up', or /assay:distill. Do NOT use for error handling — use assay:harden instead."
+description: "Strip backend code to its essence by identifying dead code, vestigial patterns, and unnecessary complexity. Use when cleaning up after refactoring or reducing cognitive load. Triggers: 'simplify code', 'find dead code', 'clean up', or /axiom:distill. Do NOT use for error handling — use axiom:harden instead."
 user-invokable: true
 metadata:
   author: lvlup-sw
@@ -15,20 +15,20 @@ metadata:
 
 ## Overview
 
-Simplification skill for the assay backend quality plugin. Covers DIM-5 (Hygiene) and DIM-1 (Topology) dimensions to strip code down to its essential form by identifying dead code, vestigial patterns, and unnecessary complexity.
+Simplification skill for the axiom backend quality plugin. Covers DIM-5 (Hygiene) and DIM-1 (Topology) dimensions to strip code down to its essential form by identifying dead code, vestigial patterns, and unnecessary complexity.
 
 ## Triggers
 
 Activate this skill when:
 - User says "simplify code", "find dead code", "clean up"
-- User runs `/assay:distill`
+- User runs `/axiom:distill`
 - Post-refactoring cleanup is needed
 - Reducing cognitive load in a module
 
 Do NOT activate when:
-- Error handling improvements are needed — use `assay:harden` instead
-- Performance optimization is the goal — performance profiling is out of scope for assay
-- Security hardening is required — use `assay:harden` instead
+- Error handling improvements are needed — use `axiom:harden` instead
+- Performance optimization is the goal — performance profiling is out of scope for axiom
+- Security hardening is required — use `axiom:harden` instead
 
 ## Process
 
@@ -40,7 +40,7 @@ Load the relevant quality dimensions from `@skills/backend-quality/references/di
 
 ### 2. Run Deterministic Checks
 
-Run `assay:scan` for deterministic checks on Hygiene and Topology dimensions. This produces machine-verifiable findings for:
+Run `axiom:scan` for deterministic checks on Hygiene and Topology dimensions. This produces machine-verifiable findings for:
 - Unused exports and imports
 - Unreachable code paths
 - Circular dependencies

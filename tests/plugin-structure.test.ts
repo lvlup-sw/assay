@@ -9,7 +9,7 @@ describe('Plugin Structure', () => {
     const path = resolve(ROOT, '.claude-plugin/plugin.json');
     expect(existsSync(path)).toBe(true);
     const json = JSON.parse(readFileSync(path, 'utf-8'));
-    expect(json.name).toBe('assay');
+    expect(json.name).toBe('axiom');
     expect(json.version).toBeDefined();
     expect(json.description).toBeDefined();
   });

@@ -1,6 +1,6 @@
 ---
 name: verify
-description: "Validate test quality by finding test-production divergence, mock overuse, and schema drift. Use when evaluating test suite health or after discovering a bug that tests missed. Triggers: 'check tests', 'test quality', 'verify contracts', or /assay:verify. Do NOT use for architecture review — use assay:critique instead."
+description: "Validate test quality by finding test-production divergence, mock overuse, and schema drift. Use when evaluating test suite health or after discovering a bug that tests missed. Triggers: 'check tests', 'test quality', 'verify contracts', or /axiom:verify. Do NOT use for architecture review — use axiom:critique instead."
 user-invokable: true
 metadata:
   author: lvlup-sw
@@ -32,9 +32,9 @@ Activate this skill when:
 - Checking schema/contract integrity after API changes
 
 Do NOT activate when:
-- Reviewing architecture, coupling, or SOLID compliance — use `assay:critique`
-- Investigating error handling or observability — use `assay:harden`
-- Looking for dead code or vestigial patterns — use `assay:distill`
+- Reviewing architecture, coupling, or SOLID compliance — use `axiom:critique`
+- Investigating error handling or observability — use `axiom:harden`
+- Looking for dead code or vestigial patterns — use `axiom:distill`
 
 ## Process
 
@@ -44,7 +44,7 @@ Load the relevant dimension definitions from `@skills/backend-quality/references
 
 ### Step 2: Run Deterministic Checks
 
-Run `assay:scan` targeting the Test Fidelity and Contracts dimensions. This surfaces mechanical findings — grep-detectable patterns like:
+Run `axiom:scan` targeting the Test Fidelity and Contracts dimensions. This surfaces mechanical findings — grep-detectable patterns like:
 - `describe.skip` / `it.skip` without issue references
 - More than 3 `vi.mock()` or `jest.mock()` calls in a single test file
 - `as Type` assertions without preceding type guards

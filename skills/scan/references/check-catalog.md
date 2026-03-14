@@ -55,9 +55,9 @@ Some patterns intentionally cast a wide net. Common false positive scenarios:
 
 - **Test files:** Patterns that detect anti-patterns in production code may match intentional test doubles or test assertions. The catalog should tag checks with `exclude-tests: true` where appropriate.
 - **Comments and documentation:** A grep pattern may match a comment explaining why a pattern is avoided. Context lines (-B/-A) help the user distinguish these.
-- **Legacy code with suppression markers:** If a file contains `// assay-ignore-next-line` or `// assay-ignore: <check-id>`, skip that specific match. This is the project-level false positive suppression mechanism.
+- **Legacy code with suppression markers:** If a file contains `// axiom-ignore-next-line` or `// axiom-ignore: <check-id>`, skip that specific match. This is the project-level false positive suppression mechanism.
 
-When in doubt, report the match. It is better to surface a false positive that the user can dismiss than to silently hide a true violation. Users can add exclusions to `.assay/checks.md` to suppress recurring false positives.
+When in doubt, report the match. It is better to surface a false positive that the user can dismiss than to silently hide a true violation. Users can add exclusions to `.axiom/checks.md` to suppress recurring false positives.
 
 ### Zero Matches
 

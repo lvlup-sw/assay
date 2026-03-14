@@ -1,6 +1,6 @@
 ---
 name: backend-quality
-description: "Core reference skill defining the backend quality dimension taxonomy, finding format, scoring model, and deterministic check catalog. Not user-invokable — referenced by all assay skills as the shared foundation."
+description: "Core reference skill defining the backend quality dimension taxonomy, finding format, scoring model, and deterministic check catalog. Not user-invokable — referenced by all axiom skills as the shared foundation."
 metadata:
   author: lvlup-sw
   version: 0.1.0
@@ -11,7 +11,7 @@ metadata:
 
 # Backend Quality — Foundation Reference
 
-This skill defines the shared foundation for all assay backend quality skills. It is NOT user-invokable — it exists to be referenced by the specialized skills.
+This skill defines the shared foundation for all axiom backend quality skills. It is NOT user-invokable — it exists to be referenced by the specialized skills.
 
 ## Dimension Taxonomy
 

@@ -1,6 +1,6 @@
 # Finding Format
 
-All assay skills emit findings in a shared schema. This enables composition, deduplication, and aggregation across skills.
+All axiom skills emit findings in a shared schema. This enables composition, deduplication, and aggregation across skills.
 
 ## Finding Schema
 

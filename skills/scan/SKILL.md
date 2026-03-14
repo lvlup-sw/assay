@@ -1,6 +1,6 @@
 ---
 name: scan
-description: "Run deterministic pattern checks against backend code. Use when you need mechanical detection of known anti-patterns, code smells, or structural issues. Triggers: 'scan code', 'check patterns', 'run checks', or /assay:scan. Do NOT use for qualitative architecture review — use assay:critique instead."
+description: "Run deterministic pattern checks against backend code. Use when you need mechanical detection of known anti-patterns, code smells, or structural issues. Triggers: 'scan code', 'check patterns', 'run checks', or /axiom:scan. Do NOT use for qualitative architecture review — use axiom:critique instead."
 user-invokable: true
 metadata:
   author: lvlup-sw
@@ -16,7 +16,7 @@ metadata:
 
 Deterministic check engine that runs grep patterns and structural analysis against backend code. Accepts a `scope` argument (file path, directory path, or cwd) and a `dimensions` argument (comma-separated dimension list or "all") to control which checks execute.
 
-This skill performs purely mechanical detection — it matches known patterns, counts structural violations, and reports findings with exact file locations. It does not make qualitative judgments about architecture or design. Other skills (like `assay:critique`) handle subjective assessment and invoke `scan` when they need deterministic evidence.
+This skill performs purely mechanical detection — it matches known patterns, counts structural violations, and reports findings with exact file locations. It does not make qualitative judgments about architecture or design. Other skills (like `axiom:critique`) handle subjective assessment and invoke `scan` when they need deterministic evidence.
 
 See `@skills/scan/references/check-catalog.md` for scan-specific execution guidance including ordering, batching, and exclusions.
 
@@ -24,13 +24,13 @@ See `@skills/scan/references/check-catalog.md` for scan-specific execution guida
 
 Activate this skill when:
 - User says "scan code", "check patterns", "run checks", or "detect anti-patterns"
-- User runs `/assay:scan`
-- Another assay skill requests deterministic pattern detection
+- User runs `/axiom:scan`
+- Another axiom skill requests deterministic pattern detection
 - User wants mechanical verification of known code smells
 
 Do not activate this skill when:
-- User wants qualitative architecture review — use `assay:critique` instead
-- User wants a full quality audit — use `assay:audit` instead
+- User wants qualitative architecture review — use `axiom:critique` instead
+- User wants a full quality audit — use `axiom:audit` instead
 - User needs subjective design feedback rather than pattern matching
 
 ## Process
@@ -41,7 +41,7 @@ Load the canonical check definitions from `@skills/backend-quality/references/de
 
 ### Step 2: Load Project-Specific Checks (Optional)
 
-If `.assay/checks.md` exists in the project root, load additional project-specific check definitions. These follow the same format as the canonical catalog and are merged into the check set. If the file does not exist, silently skip this step.
+If `.axiom/checks.md` exists in the project root, load additional project-specific check definitions. These follow the same format as the canonical catalog and are merged into the check set. If the file does not exist, silently skip this step.
 
 ### Step 3: Filter by Requested Dimensions
 
@@ -73,7 +73,7 @@ Output findings grouped by dimension, then by severity (HIGH, MEDIUM, LOW) withi
 
 - **Invalid patterns:** If a grep pattern from the catalog fails to compile or execute, report the specific pattern and error message. Do not silently skip — the user needs to know which check is broken so they can fix the catalog entry.
 - **Empty scope:** If the resolved scope contains no files to scan (empty directory, nonexistent path), return a "nothing to scan" message with the resolved path. Do not treat this as a failure.
-- **Missing `.assay/checks.md`:** Silently skip project-specific check loading. This file is optional and its absence is expected for projects that have not customized their check set.
+- **Missing `.axiom/checks.md`:** Silently skip project-specific check loading. This file is optional and its absence is expected for projects that have not customized their check set.
 - **Permission errors:** If a file cannot be read due to permissions, log the file path and continue scanning remaining files.
 
 ## Output Format
@@ -97,6 +97,6 @@ remediation: "Move raw event reads out of query handlers — use a read model pr
 |-------|------------|
 | Make qualitative judgments about matches | Report the match and let critique/review skills interpret |
 | Skip checks that produce many matches | Report all matches — downstream skills handle prioritization |
-| Suppress false positives silently | Report them and let the user tune exclusions in `.assay/checks.md` |
+| Suppress false positives silently | Report them and let the user tune exclusions in `.axiom/checks.md` |
 | Run checks outside the requested scope | Respect the scope boundary strictly |
 | Invent patterns not in the catalog | Only run checks defined in the canonical or project-specific catalogs |

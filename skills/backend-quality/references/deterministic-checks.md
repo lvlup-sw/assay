@@ -148,4 +148,4 @@ Each check has: ID, pattern, what it detects, severity, and false-positive guida
 
 ## Extensibility
 
-Projects can add custom checks via `.assay/checks.md` at the repo root. Format matches this file — one section per dimension, each check with pattern, severity, description, and false-positive guidance. Custom checks are loaded alongside the built-in catalog by the `scan` skill.
+Projects can add custom checks via `.axiom/checks.md` at the repo root. Format matches this file — one section per dimension, each check with pattern, severity, description, and false-positive guidance. Custom checks are loaded alongside the built-in catalog by the `scan` skill.

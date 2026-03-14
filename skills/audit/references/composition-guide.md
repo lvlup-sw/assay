@@ -1,6 +1,6 @@
 # Audit Composition Guide
 
-How the `audit` skill orchestrates other assay skills to produce a unified report.
+How the `audit` skill orchestrates other axiom skills to produce a unified report.
 
 ## Skill Discovery
 
@@ -8,11 +8,11 @@ The audit skill invokes a fixed set of specialized skills:
 
 | Order | Skill | Dimensions Covered |
 |-------|-------|--------------------|
-| 1 | `assay:scan` | All (deterministic) |
-| 2 | `assay:critique` | Architecture, Topology |
-| 3 | `assay:harden` | Observability, Resilience |
-| 4 | `assay:distill` | Hygiene, Topology |
-| 5 | `assay:verify` | Test Fidelity, Contracts |
+| 1 | `axiom:scan` | All (deterministic) |
+| 2 | `axiom:critique` | Architecture, Topology |
+| 3 | `axiom:harden` | Observability, Resilience |
+| 4 | `axiom:distill` | Hygiene, Topology |
+| 5 | `axiom:verify` | Test Fidelity, Contracts |
 
 **Execution order matters:** `scan` runs first so specialized skills can reference its deterministic findings when layering qualitative assessment.
 
@@ -62,7 +62,7 @@ If a skill encounters an error during execution:
 ```markdown
 ## Skill Failures
 
-- **assay:critique** — Error: [error message]. Architecture and Topology dimensions may have incomplete coverage.
+- **axiom:critique** — Error: [error message]. Architecture and Topology dimensions may have incomplete coverage.
 ```
 
 5. **Adjust coverage matrix** — mark the failed skill's dimensions as partially assessed

@@ -1,6 +1,6 @@
 ---
 name: critique
-description: "Review backend architecture for SOLID violations, coupling issues, and dependency direction problems. Use when evaluating structural design decisions or preparing for refactoring. Triggers: 'review architecture', 'check SOLID', 'critique code', or /assay:critique. Do NOT use for error handling — use assay:harden instead."
+description: "Review backend architecture for SOLID violations, coupling issues, and dependency direction problems. Use when evaluating structural design decisions or preparing for refactoring. Triggers: 'review architecture', 'check SOLID', 'critique code', or /axiom:critique. Do NOT use for error handling — use axiom:harden instead."
 user-invokable: true
 metadata:
   author: lvlup-sw
@@ -20,7 +20,7 @@ Architecture review skill covering two quality dimensions:
 - **DIM-6 (Architecture):** SOLID principles adherence, module boundaries, responsibility allocation
 - **DIM-1 (Topology):** Dependency graph health, coupling metrics, layering discipline
 
-Use this skill to evaluate structural design decisions, identify architectural drift, or prepare a codebase for refactoring. It combines deterministic scanning (via `assay:scan`) with qualitative agent assessment to produce actionable findings.
+Use this skill to evaluate structural design decisions, identify architectural drift, or prepare a codebase for refactoring. It combines deterministic scanning (via `axiom:scan`) with qualitative agent assessment to produce actionable findings.
 
 ## Triggers
 
@@ -30,17 +30,17 @@ Activate this skill when:
 - User says "review architecture" or "architecture review"
 - User says "check SOLID" or "SOLID violations"
 - User says "critique code" or "critique this module"
-- User runs `/assay:critique`
+- User runs `/axiom:critique`
 - User asks about coupling, dependency direction, or module boundaries
 - Preparing for a major refactoring effort
 
 ### Negative Triggers
 
 Do NOT activate this skill when:
-- User wants error handling review — use `assay:harden` instead
-- User wants test quality review — use `assay:verify` instead
-- User wants performance review — performance profiling is out of scope for assay
-- User wants a general code review — use `assay:scan` for a broad sweep first
+- User wants error handling review — use `axiom:harden` instead
+- User wants test quality review — use `axiom:verify` instead
+- User wants performance review — performance profiling is out of scope for axiom
+- User wants a general code review — use `axiom:scan` for a broad sweep first
 
 ## Process
 
@@ -52,7 +52,7 @@ Load the relevant dimension definitions for this review:
 
 ### Step 2: Run Deterministic Scan
 
-Execute `assay:scan` targeting Architecture and Topology dimensions specifically:
+Execute `axiom:scan` targeting Architecture and Topology dimensions specifically:
 
 - Collects measurable signals: file sizes, parameter counts, import depth, circular references
 - Establishes a baseline of deterministic findings before qualitative assessment

@@ -77,7 +77,7 @@ For each dimension, compute:
 
 ## Consumer Mapping
 
-Workflow tools that consume assay verdicts should define their own mapping. Example:
+Workflow tools that consume axiom verdicts should define their own mapping. Example:
 
 | Plugin Verdict | Consumer Verdict | Condition |
 |---------------|-----------------|-----------|
