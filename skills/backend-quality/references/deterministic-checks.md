@@ -108,6 +108,30 @@ Each check has: ID, pattern, what it detects, severity, and false-positive guida
 
 ## DIM-6: Architecture
 
+### T-6.1a: Deep nesting
+- **Pattern:** Count indentation levels per function; flag functions with >3 levels of nesting
+- **Severity:** MEDIUM
+- **Detects:** Functions where business logic is buried under layers of conditional checks
+- **False positives:** Nesting from resource scoping (`try`/`with` blocks) or framework-required patterns
+
+### T-6.1b: Long functions
+- **Pattern:** Functions exceeding 50 lines (measured from signature to closing brace)
+- **Severity:** MEDIUM
+- **Detects:** Functions doing too much — multiple concerns in a single body
+- **False positives:** Functions with long but simple data declarations (mapping tables, configuration objects)
+
+### T-6.1c: Long parameter lists
+- **Pattern:** Functions with more than 4 parameters in the signature
+- **Severity:** MEDIUM
+- **Detects:** Functions with too many inputs, suggesting they handle multiple concerns or need an options object
+- **False positives:** Constructor functions in DI-heavy codebases where parameters are injected dependencies; callback-heavy APIs where signature is dictated by framework
+
+### T-6.1d: Deep inheritance
+- **Pattern:** `class\s+\w+\s+extends\s+` — flag when inheritance chain exceeds 2 levels
+- **Severity:** MEDIUM
+- **Detects:** Class hierarchies that would be simpler as composition
+- **False positives:** Framework-required inheritance (e.g., extending base controller classes); sealed hierarchies with exhaustive matching
+
 ### T-6.1: Circular imports
 - **Pattern:** Build import graph; detect cycles
 - **Severity:** HIGH

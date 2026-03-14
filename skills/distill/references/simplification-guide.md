@@ -36,9 +36,53 @@ Reference guide for reducing code complexity, identifying vestigial patterns, an
 ### Reducing Conditional Complexity
 
 - **Collapse nested conditionals:** Replace `if (a) { if (b) { ... } }` with `if (a && b) { ... }` when the nesting adds no clarity
-- **Use early returns:** Convert deep nesting into guard clauses that return/throw early
 - **Replace flag variables:** When a boolean flag is set and then checked once, inline the condition
 - **Simplify boolean expressions:** `if (x === true)` becomes `if (x)`; `if (!x === false)` becomes `if (x)`
+
+#### Early Returns and Guard Clauses
+
+Convert deep nesting into guard clauses that return or throw early. This is one of the highest-impact readability improvements available.
+
+**The principle:** Handle preconditions and edge cases at the top of the function, then let the main logic flow at the lowest indentation level.
+
+**Before — nested conditionals:**
+```typescript
+function getDiscount(customer: Customer): number {
+  if (customer) {
+    if (customer.isActive) {
+      if (customer.orders > 10) {
+        return 0.15
+      } else {
+        return 0.05
+      }
+    } else {
+      return 0
+    }
+  } else {
+    throw new Error('Customer required')
+  }
+}
+```
+
+**After — guard clauses:**
+```typescript
+function getDiscount(customer: Customer): number {
+  if (!customer) throw new Error('Customer required')
+  if (!customer.isActive) return 0
+
+  return customer.orders > 10 ? 0.15 : 0.05
+}
+```
+
+**Patterns to look for:**
+- `if (x) { ... long block ... } else { return y }` — invert: `if (!x) return y; ... long block ...`
+- `if (x) { if (y) { if (z) { ... } } }` — flatten: `if (!x) return; if (!y) return; if (!z) return; ...`
+- `else` after a `return` or `throw` — the `else` is unnecessary; remove it and dedent
+
+**When not to flatten:**
+- Both branches have substantial logic (not just returns) — `if/else` is clearer
+- The nesting represents resource scoping (e.g., transaction boundaries)
+- The conditions are not preconditions but genuinely branching logic paths
 
 ## Vestigial Pattern Identification
 

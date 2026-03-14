@@ -100,7 +100,17 @@ Identify modules with too many responsibilities:
 - Classes or modules that are modified in every feature branch (shotgun surgery indicator)
 - Modules that import from many unrelated domains
 
-#### 3e. Circular Dependency Identification
+#### 3e. Readability Patterns
+
+Evaluate code-level readability and structural clarity:
+
+- **DRY violations:** Duplicated logic across multiple locations that should be extracted
+- **Deep nesting:** Functions with excessive indentation that could use guard clauses / early returns
+- **Composition over inheritance:** Class hierarchies that would be simpler as composed components
+- **Parameter discipline:** Long parameter lists and boolean flags that obscure call-site meaning
+- For definitions, violation signals, and refactoring approaches, see `@skills/critique/references/readability-patterns.md`
+
+#### 3f. Circular Dependency Identification
 
 Detect import cycles between modules:
 
@@ -130,3 +140,4 @@ Format all findings per `@skills/backend-quality/references/findings-format.md`:
 - `@skills/backend-quality/references/findings-format.md` — Standard output format for findings
 - `@skills/critique/references/solid-principles.md` — SOLID principle definitions, violation signals, severity guide, and detection heuristics
 - `@skills/critique/references/dependency-patterns.md` — Dependency pattern catalog, coupling metrics, circular dependency detection, and layered architecture guidance
+- `@skills/critique/references/readability-patterns.md` — DRY, early returns, composition over inheritance, and parameter discipline
