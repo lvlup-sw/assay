@@ -1,12 +1,33 @@
 {
   "name": "@lvlup-sw/axiom",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Composable backend quality skills for Claude Code",
   "type": "module",
-  "private": true,
   "scripts": {
     "test": "vitest",
     "test:run": "vitest run"
+  },
+  "files": [
+    ".claude-plugin",
+    "skills",
+    "CLAUDE.md"
+  ],
+  "keywords": [
+    "claude-code-plugin",
+    "backend-quality",
+    "code-review",
+    "architecture",
+    "design-patterns"
+  ],
+  "author": {
+    "name": "Levelup Software",
+    "email": "oss@levelupsoftware.com"
+  },
+  "license": "MIT",
+  "homepage": "https://github.com/lvlup-sw/axiom",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lvlup-sw/axiom.git"
   },
   "devDependencies": {
     "vitest": "^3.0.0",
