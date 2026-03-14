@@ -1,6 +1,6 @@
-# Axiom — Backend Quality Plugin
+# Axiom
 
-Composable backend quality skills for systematic architectural health assessment. The backend counterpart to impeccable's frontend design quality.
+Backend code quality skills. The other half of impeccable — same composable pattern, pointed at architecture instead of UI.
 
 ## Skills
 

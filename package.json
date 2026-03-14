@@ -1,7 +1,7 @@
 {
   "name": "@lvlup-sw/axiom",
   "version": "0.2.0",
-  "description": "Composable backend quality skills for Claude Code",
+  "description": "Backend code quality skills for Claude Code",
   "type": "module",
   "scripts": {
     "test": "vitest",
