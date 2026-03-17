@@ -1,6 +1,6 @@
 {
   "name": "axiom",
-  "version": "0.3.0",
+  "version": "0.2.6",
   "description": "Backend code quality skills for Claude Code. Seven skills that audit, critique, harden, simplify, and humanize your architecture — the backend half of impeccable.",
   "author": {
     "name": "LevelUp Software"
