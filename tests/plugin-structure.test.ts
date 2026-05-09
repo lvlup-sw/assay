@@ -29,15 +29,10 @@ describe('Plugin Structure', () => {
     }
   });
 
-  it('SkillsDirectory_VendorDirIsExcludedFromPublicSkills', () => {
-    // The _vendor namespace contains pinned upstream copies; they are not user-facing skills.
-    // Underscore prefix is the convention for non-public namespaces.
-    const vendorPath = resolve(ROOT, 'skills/_vendor');
-    if (existsSync(vendorPath)) {
-      // Verify any vendored skills have name fields starting with `_vendor:`
-      // so they don't trigger as public skills.
-      // (Detailed assertion lives in tests/vendor.test.ts)
-      expect(true).toBe(true);
-    }
+  it('SkillsDirectory_NoVendorContent', () => {
+    // Vendored upstream content lives at repo-root vendor/, NOT under skills/.
+    // This prevents the skill loader from enumerating vendored content as triggerable skills.
+    expect(existsSync(resolve(ROOT, 'skills/_vendor')), 'old skills/_vendor location must not exist').toBe(false);
+    expect(existsSync(resolve(ROOT, 'vendor/skill-creator')), 'vendor/skill-creator must exist at repo root').toBe(true);
   });
 });

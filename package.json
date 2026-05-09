@@ -10,6 +10,7 @@
   "files": [
     ".claude-plugin",
     "skills",
+    "vendor",
     "CLAUDE.md"
   ],
   "keywords": [

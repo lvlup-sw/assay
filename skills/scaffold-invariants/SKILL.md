@@ -92,7 +92,7 @@ The generated skill must be well-formed:
 
 ## Failure Modes
 
-- **Vendored skill-creator missing or stale** (UPSTREAM.md older than 30 days, or directory absent) → fall back to bundled templates only (no description tuning, no eval-prompt suggestions). Emit a one-line warning: `Vendored skill-creator not available; emitted scaffold uses bundled templates only. Sync vendor and re-run for description tuning.`
+- **Vendored skill-creator missing or stale** (`vendor/skill-creator/UPSTREAM.md` older than 30 days, or `vendor/skill-creator/` directory absent) → fall back to bundled templates only (no description tuning, no eval-prompt suggestions). Emit a one-line warning: `Vendored skill-creator not available; emitted scaffold uses bundled templates only. Sync vendor and re-run for description tuning.`
 - **Output directory already exists with content** → prompt before overwriting; default action is abort.
 - **Interview yields zero invariants** → emit a SKILL.md with empty INV section and a one-line note: `No invariants surfaced from interview. Re-run when project commitments are clearer.`
 
@@ -100,4 +100,4 @@ The generated skill must be well-formed:
 
 - Pairing contract: `@skills/backend-quality/references/pairing-contract.md`
 - Project archetype: `exarchos/.claude/skills/design-invariants/SKILL.md`
-- Vendored upstream tooling: `skills/_vendor/skill-creator/SKILL.md` (when present)
+- Vendored upstream tooling: `vendor/skill-creator/SKILL.md` (full directory copy from `anthropics/skills`; reference only, not loaded as a triggerable skill)
