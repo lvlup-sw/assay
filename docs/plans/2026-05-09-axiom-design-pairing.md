@@ -133,7 +133,7 @@ This plan decomposes the design's three deliverables into TDD tasks. Each task f
 
 2. **[GREEN]** Create `skills/design/SKILL.md` with frontmatter-only skeleton
    - File: `skills/design/SKILL.md`
-   - Frontmatter: `name: design`, `user-invokable: true`, `metadata.category: design`, `metadata.dimensions: ['all']`, `pairs-with-pattern: <project>:*-invariants`, description with triggers
+   - Frontmatter: `name: design`, `user-invokable: true`, `metadata.category: design`, `metadata.dimensions: ['all']`, `metadata.pairs-with-pattern: <project>:*-invariants` (nested under `metadata:` per the canonical pairing contract; top-level placement does not satisfy discovery), description with triggers
    - Run: `npm run test:run` — MUST PASS
 
 3. **[REFACTOR]** Cross-check `tests/plugin-structure.test.ts` `SkillsDirectory_ContainsExpectedSubdirs` — extend expected list to include `'design'`
@@ -403,7 +403,7 @@ This plan decomposes the design's three deliverables into TDD tasks. Each task f
 **TDD Steps:**
 1. **[RED]** Write test: `ScaffoldInvariants_Body_DocumentsEmitCorrectness`
    - File: `tests/scaffold-invariants.test.ts` (extend)
-   - Assertion: SKILL.md body's `## Emit` section documents (a) generated SKILL.md gets `pairs-with: axiom:design`, (b) each invariant entry includes `axiom_overlap: DIM-N` if user named one, (c) generated structure: `SKILL.md` + `references/INV-N-<slug>.md` + `references/deterministic-checks.md`
+   - Assertion: SKILL.md body's `## Emit` section documents (a) generated SKILL.md gets `metadata.pairs-with: axiom:design` (nested under `metadata:` per the canonical pairing contract), (b) each invariant entry includes `axiom_overlap: DIM-N` if user named one, (c) generated structure: `SKILL.md` + `references/INV-N-<slug>.md` + `references/deterministic-checks.md`
    - Expected failure: emit section does not document these
    - Run: `npm run test:run` — MUST FAIL
 
@@ -539,7 +539,7 @@ Existing tests extended:
 - All 10 design DRs map to at least one task and are verifiable from acceptance criteria.
 - Vendored `skill-creator` has `UPSTREAM.md` with current commit SHA.
 - CI vendor-sync workflow has run at least once successfully (or been validated by manual trigger).
-- A coordination PR against `exarchos` updates `exarchos:design-invariants` `pairs-with: axiom:backend-quality` → `pairs-with: axiom:design` (separate change set, but tracked here).
+- A coordination PR against `exarchos` updates `exarchos:design-invariants` `metadata.pairs-with: axiom:backend-quality` → `metadata.pairs-with: axiom:design` (separate change set, but tracked here; canonical position is nested under `metadata:` per the pairing contract).
 
 ---
 
@@ -548,4 +548,4 @@ Existing tests extended:
 - **Documentation-driven TDD.** Most tasks "test" content presence via structural assertions (content includes specific section, frontmatter has specific field, file exists with specific shape). This mirrors axiom's existing test pattern. The tests are real failures-before-content, not theatre.
 - **No production code in the traditional sense.** Axiom is a skills repo; "implementation" is markdown + YAML + CI workflow. The Iron Law is honored by writing assertion-tests first, then content.
 - **Vendoring blocked on license.** T0 is a hard gate. If license is incompatible, T6/T7/T10/T11 scope shrinks materially and design needs amendment.
-- **Coordination dependency on exarchos.** DR-3 acceptance criteria mention updating `exarchos:design-invariants`'s `pairs-with` field. That's a separate-repo change tracked in the Definition of Done but not a task in this plan.
+- **Coordination dependency on exarchos.** DR-3 acceptance criteria mention updating `exarchos:design-invariants`'s `metadata.pairs-with` field (canonical position; not top-level). That's a separate-repo change tracked in the Definition of Done but not a task in this plan.

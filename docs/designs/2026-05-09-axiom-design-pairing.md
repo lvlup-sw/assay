@@ -5,7 +5,12 @@
 > **Approach:** Skills sharing a foundation, with light validation
 > **Audience:** anyone implementing the new axiom skills or the pairing contract
 
-> **Implementation note (2026-05-09, post-review).** This design originally specified the vendored `skill-creator` path as `axiom/skills/_vendor/skill-creator/` with a `name: _vendor:skill-creator` frontmatter rewrite to prevent trigger collision. The chosen implementation moved the vendor to repo-root `vendor/skill-creator/` (outside `skills/`, so the loader never enumerates it) and dropped the frontmatter rewrite (path placement is the structural guarantee instead). This eliminated dangling internal references caused by selective subdir vendoring. The design body below still uses the original path for historical reference — see commit `cd84bff` for the relocation rationale and `vendor/skill-creator/UPSTREAM.md` for the live documentation. The pairing contract and DR-6 acceptance criteria were updated; everything else in this design is unchanged.
+> **Implementation note (2026-05-09, post-review).** Two clarifications layered on top of this design after PR #3 review feedback:
+>
+> 1. **Vendor path.** This design originally specified `axiom/skills/_vendor/skill-creator/` with a `name: _vendor:skill-creator` frontmatter rewrite. The shipped layout moved the vendor to repo-root `vendor/skill-creator/` (outside `skills/`, so the loader never enumerates it) and dropped the frontmatter rewrite (path placement is the structural guarantee instead). See commit `cd84bff` and `vendor/skill-creator/UPSTREAM.md`.
+> 2. **Canonical position of pairing slots.** The shipped pairing contract (`skills/backend-quality/references/pairing-contract.md`) requires `metadata.pairs-with` and `metadata.pairs-with-pattern` to be **nested under `metadata:`** in frontmatter. Several example snippets in the design body below show top-level placement (`pairs-with: …` directly under `---`) — these are **historical reference only**. Implementations must use the nested form; discovery does not honor top-level placement.
+>
+> The design body below is preserved for historical reference; the contract doc and DR-3/DR-8 acceptance criteria are the source of truth. Everything else in this design is unchanged.
 
 ---
 
