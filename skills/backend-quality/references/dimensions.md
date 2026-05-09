@@ -27,6 +27,13 @@ Eight canonical dimensions for assessing backend architectural health. Each dime
 - Violation: `getStore()` silently creates an in-memory store when the real store wasn't wired, causing events to be invisible across modules
 - Healthy: Constructor injection where the absence of a dependency is a startup error, not a silent fallback
 
+### Design questions
+
+- **Lifecycle ownership.** For every shared resource the design introduces, who creates it, who owns it, and where is the single source of truth?
+- **Dependency injection.** Are all dependencies passed as parameters or constructor arguments? If any are module globals, what justifies the ambient state?
+- **Fallback policy.** If a dependency isn't wired, does the system fail loud (startup error) or fall back silently? Loud is the default.
+- **Graph shape.** Sketch the dependency graph for the new code. Are there cycles? If so, justify or break them.
+
 ---
 
 ## DIM-2: Observability
@@ -54,6 +61,13 @@ Eight canonical dimensions for assessing backend architectural health. Each dime
 - Violation: `catch { mutableState._events = [] }` — silently resets state on error, hiding the failure
 - Healthy: `catch (e) { throw new Error('Failed to load events from store', { cause: e }) }`
 
+### Design questions
+
+- **Catch posture.** For every catch block the design will introduce, what action does it take: re-throw, log with context, or document why it swallows? "Swallow silently" is never the answer.
+- **Error context.** When the new code raises an error, does the message include what failed, why, and what the caller should do? Generic messages are debt.
+- **Fallback visibility.** If the design has a fallback path, how does it announce itself (log, metric, event)? An undetectable fallback is a silent failure waiting to happen.
+- **Promise discipline.** For every `.catch()` or async error path, what's the recovery plan? Empty `.catch(() => {})` is forbidden.
+
 ---
 
 ## DIM-3: Contracts
@@ -80,6 +94,13 @@ Eight canonical dimensions for assessing backend architectural health. Each dime
 **Examples:**
 - Violation: `_events` removed from Zod schema but guard code still reads `state._events`, silently getting `undefined`
 - Healthy: Schema changes accompanied by grep for all field references, with type system enforcing the change
+
+### Design questions
+
+- **Schema boundaries.** Where do the new types/schemas live? Is each runtime read of a field guaranteed by the schema, or is there a gap?
+- **Versioning posture.** Does this design make a breaking API change? If yes, what's the versioning or migration path? If no, what makes the change backward-compatible?
+- **Type assertions.** Will the implementation use `as` or `!` to bypass the type system? Each instance needs a documented runtime guard (`typeof`, `instanceof`, schema parse).
+- **Cross-boundary contracts.** For every interface across module/service boundaries, who validates the contract — caller, callee, or both?
 
 ---
 
@@ -109,6 +130,13 @@ Eight canonical dimensions for assessing backend architectural health. Each dime
 - Violation: All tests use the same EventStore instance for producer and consumer, but production has two separate instances that were never connected — 4192 tests pass, system is broken
 - Healthy: Test creates the same wiring as production startup, catching initialization bugs
 
+### Design questions
+
+- **Wiring parity.** Will the tests construct the new code's collaborators the same way production does? Where the tests diverge from production wiring, what's the rationale?
+- **Mock boundary.** What's the mocking boundary for this design — only true infrastructure (HTTP, DB, filesystem), or also internal collaborators? Internal mocking should be the exception, not the default.
+- **Integration coverage.** For every cross-cutting behavior in the design, is there at least one integration test that exercises the seam, not just unit tests on each side?
+- **Skip discipline.** Will any test be marked `.skip` during this work? If yes, what's the issue link and removal date?
+
 ---
 
 ## DIM-5: Hygiene
@@ -137,6 +165,13 @@ Eight canonical dimensions for assessing backend architectural health. Each dime
 - Violation: `registerEventTools()` exists but is never called in production — vestigial from an earlier design that was refactored
 - Healthy: Unused code removed, version history preserves it if needed
 
+### Design questions
+
+- **Single implementation.** Does the design introduce a behavior that already exists elsewhere? If yes, is it consolidating or forking?
+- **Reachability.** For every export the new code adds, who calls it? Unused exports should be removed before the design is done.
+- **Comment policy.** Will any commented-out code be left behind? Use git history instead.
+- **Feature-flag horizon.** If the design introduces a flag, what's the removal date or condition? A flag without a sunset is debt.
+
 ---
 
 ## DIM-6: Architecture
@@ -164,6 +199,13 @@ Eight canonical dimensions for assessing backend architectural health. Each dime
 **Examples:**
 - Violation: Event store module imports from CLI module, creating a circular dependency that constrains refactoring
 - Healthy: Event store depends on interfaces; CLI implements those interfaces
+
+### Design questions
+
+- **Dependency direction.** Do the new modules depend inward (toward the domain) or outward (toward infrastructure)? Outward dependencies in the core are a smell.
+- **Module responsibility.** Each new module: state its single responsibility in one sentence. If you need "and" or a list, split it.
+- **Interface placement.** Where do the interfaces live — at the domain boundary the consumer owns, or inside the producer's module? Domain-boundary placement is the default.
+- **Change surface.** For a representative change to this design, how many files would need editing? More than five suggests shotgun surgery.
 
 ---
 
@@ -194,6 +236,13 @@ Eight canonical dimensions for assessing backend architectural health. Each dime
 - Violation: In-memory cache grows without limit as events are processed, eventually exhausting heap
 - Healthy: LRU cache with configurable max size, eviction logged for observability
 
+### Design questions
+
+- **Cache bounds.** Does the design introduce any cache, map, or buffer? What's its maximum size and eviction policy?
+- **Timeout coverage.** For every external call (HTTP, DB, file I/O), what's the timeout? "None" means hung-forever-on-failure.
+- **Retry shape.** If the design retries, what's the maximum attempt count and backoff strategy? Unbounded retry is a fork bomb.
+- **Resource lifecycle.** For every resource the design opens (file handle, connection, lock), where is the matching close, and does it run on the error path too?
+
 ---
 
 ## DIM-8: Prose Quality
@@ -221,6 +270,13 @@ Eight canonical dimensions for assessing backend architectural health. Each dime
 **Examples:**
 - Violation: "This crucial module serves as a testament to the team's commitment to fostering robust architecture. It delves into the intricate tapestry of event-sourced workflows."
 - Healthy: "This module handles event-sourced workflow state. It stores events in SQLite and rebuilds state on read."
+
+### Design questions
+
+- **Audience and tone.** Who reads the new docs/comments — domain experts, new hires, future maintainers? Calibrate language accordingly; avoid generic AI register.
+- **Specificity check.** Will the writing name concrete things (file paths, function names, exact behaviors) or hedge with abstractions ("various", "many", "robust")? Concrete wins.
+- **Voice ownership.** Does the prose sound like someone on this team wrote it, or like a chatbot summary? If a sentence could appear in any project's docs unchanged, rewrite it.
+- **Removal threshold.** For every comment the design adds, would a future reader be confused without it? If no, delete; rely on identifiers and types instead.
 
 ---
 

@@ -6,7 +6,7 @@ import { parse as parseYaml } from 'yaml';
 const ROOT = resolve(import.meta.dirname, '..');
 
 const ALL_DIMENSIONS = ['topology', 'observability', 'contracts', 'test-fidelity', 'hygiene', 'architecture', 'resilience', 'prose-quality'];
-const INVOKABLE_SKILLS = ['audit', 'critique', 'harden', 'distill', 'verify', 'scan', 'humanize'];
+const INVOKABLE_SKILLS = ['audit', 'critique', 'harden', 'distill', 'verify', 'scan', 'humanize', 'design', 'scaffold-invariants'];
 
 function parseFrontmatter(content: string): Record<string, unknown> | null {
   const match = content.match(/^---\r?\n([\s\S]*?)\r?\n---/);
@@ -61,6 +61,55 @@ describe('Dimension Coverage', () => {
 
     for (const [dim, skills] of coverageMap) {
       expect(skills.length, `Dimension '${dim}' not covered by any skill`).toBeGreaterThan(0);
+    }
+  });
+
+  it('DimensionsMd_AllEightDimensions_HaveDesignQuestionsBlock', () => {
+    const path = resolve(ROOT, 'skills/backend-quality/references/dimensions.md');
+    expect(existsSync(path), 'dimensions.md missing').toBe(true);
+    const content = readFileSync(path, 'utf-8');
+
+    // Split content into per-dimension sections, identified by `## DIM-N:` headers
+    const dimSectionRe = /^## (DIM-[1-8]):/gm;
+    const matches = [...content.matchAll(dimSectionRe)];
+
+    // Each DIM-1..DIM-8 must appear exactly once: set-equality, not just count.
+    // (length === 8 can pass with duplicates + a missing DIM.)
+    const capturedIds = matches.map((m) => m[1]);
+    const expectedIds = ['DIM-1', 'DIM-2', 'DIM-3', 'DIM-4', 'DIM-5', 'DIM-6', 'DIM-7', 'DIM-8'];
+    expect(
+      [...new Set(capturedIds)].sort(),
+      `expected unique DIM-1..DIM-8 sections, got: ${capturedIds.join(', ')}`
+    ).toEqual(expectedIds);
+    expect(
+      capturedIds.length,
+      `expected no duplicate DIM-N headers, got: ${capturedIds.join(', ')}`
+    ).toBe(8);
+
+    // For each DIM-N, isolate its section (until next ## DIM- or EOF) and assert it
+    // contains a `### Design questions` subsection with at least 3 list items.
+    for (let i = 0; i < matches.length; i++) {
+      const start = matches[i].index!;
+      const end = i + 1 < matches.length ? matches[i + 1].index! : content.length;
+      const section = content.slice(start, end);
+      const dimId = matches[i][1];
+
+      expect(
+        section,
+        `${dimId}: missing '### Design questions' subsection`
+      ).toMatch(/^### Design questions\s*$/m);
+
+      // Count bullet items under the Design questions block (until next ### or end of section)
+      const dqStart = section.search(/^### Design questions\s*$/m);
+      expect(dqStart, `${dimId}: could not locate Design questions block`).toBeGreaterThanOrEqual(0);
+      const afterHeader = section.slice(dqStart).replace(/^### Design questions\s*$/m, '');
+      const nextHeaderIdx = afterHeader.search(/^### /m);
+      const dqBlock = nextHeaderIdx >= 0 ? afterHeader.slice(0, nextHeaderIdx) : afterHeader;
+      const bulletCount = (dqBlock.match(/^- /gm) ?? []).length;
+      expect(
+        bulletCount,
+        `${dimId}: Design questions block has ${bulletCount} bullets, expected at least 3`
+      ).toBeGreaterThanOrEqual(3);
     }
   });
 

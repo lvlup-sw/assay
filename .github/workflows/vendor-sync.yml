@@ -1,0 +1,129 @@
+name: Vendor Sync
+
+on:
+  schedule:
+    # Weekly: Mondays at 10:00 UTC
+    - cron: '0 10 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  sync-skill-creator:
+    name: Sync vendor/skill-creator from anthropics/skills
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Sparse-clone upstream skill-creator
+        id: fetch
+        run: |
+          set -euo pipefail
+          rm -rf /tmp/upstream
+          git clone --depth 1 --filter=blob:none --no-checkout \
+            https://github.com/anthropics/skills.git /tmp/upstream
+          cd /tmp/upstream
+          git sparse-checkout init --cone
+          git sparse-checkout set skills/skill-creator
+          git checkout main
+          UPSTREAM_SHA=$(git rev-parse HEAD)
+          echo "upstream_sha=${UPSTREAM_SHA}" >> "$GITHUB_OUTPUT"
+
+      - name: Replace vendor/skill-creator with upstream content
+        run: |
+          set -euo pipefail
+          # Preserve UPSTREAM.md (our local provenance record) before replacement
+          cp vendor/skill-creator/UPSTREAM.md /tmp/UPSTREAM.md.preserved
+
+          # Full directory replacement — wipe and re-copy
+          rm -rf vendor/skill-creator
+          mkdir -p vendor/skill-creator
+          cp -r /tmp/upstream/skills/skill-creator/. vendor/skill-creator/
+
+          # Rename LICENSE.txt → LICENSE for filesystem consistency (matches our local convention)
+          if [ -f vendor/skill-creator/LICENSE.txt ]; then
+            mv vendor/skill-creator/LICENSE.txt vendor/skill-creator/LICENSE
+          fi
+
+          # Restore preserved UPSTREAM.md
+          cp /tmp/UPSTREAM.md.preserved vendor/skill-creator/UPSTREAM.md
+
+      - name: Update UPSTREAM.md provenance fields (Python, not sed)
+        env:
+          UPSTREAM_SHA: ${{ steps.fetch.outputs.upstream_sha }}
+        run: |
+          python3 <<'PY'
+          import os
+          import re
+          from datetime import date
+
+          path = 'vendor/skill-creator/UPSTREAM.md'
+          sha = os.environ['UPSTREAM_SHA']
+          today = date.today().isoformat()
+
+          with open(path, 'r', encoding='utf-8') as f:
+              content = f.read()
+
+          # Update commit_sha row in markdown table — match a row whose first cell is **commit_sha**
+          content = re.sub(
+              r'(\| \*\*commit_sha\*\* \| `)[^`]*(` \|)',
+              lambda m: f"{m.group(1)}{sha}{m.group(2)}",
+              content,
+              count=1,
+          )
+
+          # Update sync_date row
+          content = re.sub(
+              r'(\| \*\*sync_date\*\* \| )[^|]+(\|)',
+              lambda m: f"{m.group(1)}{today} {m.group(2)}",
+              content,
+              count=1,
+          )
+
+          with open(path, 'w', encoding='utf-8') as f:
+              f.write(content)
+
+          print(f"Updated UPSTREAM.md: commit_sha={sha}, sync_date={today}")
+          PY
+
+      - name: Detect drift
+        id: drift
+        run: |
+          set -euo pipefail
+          if git diff --quiet vendor/skill-creator/; then
+            echo "drift=false" >> "$GITHUB_OUTPUT"
+            echo "No upstream changes detected."
+          else
+            echo "drift=true" >> "$GITHUB_OUTPUT"
+            echo "Drift detected — files changed:"
+            git diff --stat vendor/skill-creator/
+          fi
+
+      - name: Open PR on drift
+        if: steps.drift.outputs.drift == 'true'
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: vendor-sync/skill-creator
+          delete-branch: true
+          commit-message: "vendor: sync skill-creator from anthropics/skills @ ${{ steps.fetch.outputs.upstream_sha }}"
+          title: "vendor: sync skill-creator from upstream"
+          body: |
+            Automated drift detection from `anthropics/skills` upstream.
+
+            **Upstream commit:** `${{ steps.fetch.outputs.upstream_sha }}`
+            **Vendored path:** `vendor/skill-creator/`
+
+            ## Review checklist
+
+            - [ ] No upstream change breaks `axiom:scaffold-invariants` borrowed patterns.
+            - [ ] LICENSE changes (if any) remain Apache-2.0-compatible.
+            - [ ] New top-level files in upstream are accounted for.
+            - [ ] `UPSTREAM.md` `commit_sha` and `sync_date` updated correctly (Python-driven, not sed).
+
+            See `vendor/skill-creator/UPSTREAM.md` for the full sync policy.
+          labels: |
+            vendor-sync
+            chore
