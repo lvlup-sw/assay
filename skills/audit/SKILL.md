@@ -109,6 +109,29 @@ Output the structured report per the template in `@skills/backend-quality/refere
 [Top 3-5 prioritized action items]
 ```
 
+## Pairing Contract Check
+
+When the assessed scope contains a project-specific invariants skill (any loaded skill with frontmatter `pairs-with: axiom:design`), audit runs an advisory check against the pairing contract documented at `@skills/backend-quality/references/pairing-contract.md`.
+
+**Two checks, both LOW severity, both advisory only:**
+
+1. **Overlap declaration.** The paired skill must declare `axiom_overlap: DIM-N` for at least one of its invariants. A paired skill with zero overlap declarations is technically compliant (axiom_overlap is optional per the contract) but suggests the pairing isn't specializing axiom dimensions in any documented way — likely a documentation gap.
+2. **Overlap validity.** Each declared `axiom_overlap` value must reference a real dimension (`DIM-1` through `DIM-8`). Typos like `DIM-9` or `DIM-1A` are flagged.
+
+**Severity rationale.** Pairing-contract violations don't break functionality; they erode the design-time interleaving experience over time. LOW severity reflects that. These findings never escalate the audit verdict beyond `NEEDS_ATTENTION` and never produce HIGH/MEDIUM unless other findings independently warrant them.
+
+**Output format.** Findings carry `dimension: pairing-contract` (a meta dimension distinct from DIM-1..DIM-8) so reviewers can filter them when desired:
+
+```json
+{
+  "severity": "LOW",
+  "dimension": "pairing-contract",
+  "skill": "exarchos:design-invariants",
+  "description": "Paired skill declares pairs-with: axiom:design but no invariant has an axiom_overlap declaration.",
+  "required_fix": "Add axiom_overlap: DIM-N to at least one invariant, or update the pairing-contract declaration to reflect that this skill is project-specific without dimension overlap."
+}
+```
+
 ## Error Handling
 
 - **Empty scope (no files to assess):** Return "Nothing to assess — no files found in scope" with verdict CLEAN
@@ -125,3 +148,4 @@ For details on how audit discovers skills, handles deduplication, and formats re
 - Finding format: `@skills/backend-quality/references/findings-format.md`
 - Scoring model: `@skills/backend-quality/references/scoring-model.md`
 - Composition details: `@skills/audit/references/composition-guide.md`
+- Pairing contract: `@skills/backend-quality/references/pairing-contract.md`

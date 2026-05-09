@@ -1,0 +1,97 @@
+name: Vendor Sync
+
+on:
+  schedule:
+    # Weekly: Mondays at 10:00 UTC
+    - cron: '0 10 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  sync-skill-creator:
+    name: Check upstream anthropics/skills for skill-creator drift
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Fetch upstream skill-creator
+        id: fetch
+        run: |
+          mkdir -p /tmp/upstream-skill-creator
+          # Fetch SKILL.md and LICENSE from upstream main branch
+          curl -fsSL \
+            "https://raw.githubusercontent.com/anthropics/skills/main/skills/skill-creator/SKILL.md" \
+            > /tmp/upstream-skill-creator/SKILL.md.upstream
+          curl -fsSL \
+            "https://raw.githubusercontent.com/anthropics/skills/main/skills/skill-creator/LICENSE.txt" \
+            > /tmp/upstream-skill-creator/LICENSE.upstream
+
+          # Capture upstream commit SHA for the file
+          UPSTREAM_SHA=$(gh api repos/anthropics/skills/commits/main --jq '.sha')
+          echo "upstream_sha=${UPSTREAM_SHA}" >> "$GITHUB_OUTPUT"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Apply local frontmatter rewrite to upstream copy
+        run: |
+          # Mirror the rename so diffs reflect content drift, not the rename
+          sed 's|^name: skill-creator$|name: _vendor:skill-creator|' \
+            /tmp/upstream-skill-creator/SKILL.md.upstream \
+            > /tmp/upstream-skill-creator/SKILL.md.normalized
+
+      - name: Check for drift
+        id: drift
+        run: |
+          set +e
+          diff -q skills/_vendor/skill-creator/SKILL.md /tmp/upstream-skill-creator/SKILL.md.normalized
+          SKILL_DRIFT=$?
+          diff -q skills/_vendor/skill-creator/LICENSE /tmp/upstream-skill-creator/LICENSE.upstream
+          LICENSE_DRIFT=$?
+          set -e
+
+          if [ "$SKILL_DRIFT" != 0 ] || [ "$LICENSE_DRIFT" != 0 ]; then
+            echo "drift=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "drift=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Apply update if drift detected
+        if: steps.drift.outputs.drift == 'true'
+        run: |
+          cp /tmp/upstream-skill-creator/SKILL.md.normalized skills/_vendor/skill-creator/SKILL.md
+          cp /tmp/upstream-skill-creator/LICENSE.upstream skills/_vendor/skill-creator/LICENSE
+          # Update UPSTREAM.md commit_sha and sync_date
+          TODAY=$(date -u +%Y-%m-%d)
+          sed -i "s|^| \\*\\*commit_sha\\*\\* | \\\`.*\\\` |$| | **commit_sha** | \\\`${{ steps.fetch.outputs.upstream_sha }}\\\` ||" skills/_vendor/skill-creator/UPSTREAM.md || true
+          sed -i "s|^| \\*\\*sync_date\\*\\* | .* |$| | **sync_date** | ${TODAY} ||" skills/_vendor/skill-creator/UPSTREAM.md || true
+
+      - name: Open PR on drift
+        if: steps.drift.outputs.drift == 'true'
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: vendor-sync/skill-creator
+          delete-branch: true
+          commit-message: "vendor: sync skill-creator from anthropics/skills @ ${{ steps.fetch.outputs.upstream_sha }}"
+          title: "vendor: sync skill-creator from upstream"
+          body: |
+            Automated drift detection from `anthropics/skills` upstream.
+
+            **Upstream commit:** `${{ steps.fetch.outputs.upstream_sha }}`
+            **Vendored path:** `skills/_vendor/skill-creator/`
+
+            ## Review checklist
+
+            - [ ] Frontmatter rename `_vendor:skill-creator` is preserved.
+            - [ ] No upstream change breaks `axiom:scaffold-invariants` borrowed patterns.
+            - [ ] No new subdirectories from upstream warrant vendoring.
+            - [ ] LICENSE / NOTICE preserved verbatim.
+            - [ ] `UPSTREAM.md` `commit_sha` and `sync_date` updated correctly.
+
+            See `skills/_vendor/skill-creator/UPSTREAM.md` for the full sync policy.
+          labels: |
+            vendor-sync
+            chore

@@ -38,4 +38,17 @@ describe('Pairing Contract', () => {
       'backend-quality SKILL.md must reference pairing-contract.md'
     ).toContain('pairing-contract.md');
   });
+
+  it('PairingContract_AuditSkill_DocumentsCheck', () => {
+    const auditPath = resolve(ROOT, 'skills/audit/SKILL.md');
+    expect(existsSync(auditPath)).toBe(true);
+    const content = readFileSync(auditPath, 'utf-8');
+
+    // axiom:audit must document the advisory pairing-contract check
+    expect(content, 'audit must have Pairing Contract Check section').toMatch(/^## Pairing Contract Check/m);
+    expect(content, 'audit must reference pairing-contract.md').toContain('pairing-contract.md');
+    expect(content, 'audit check must declare LOW severity').toMatch(/LOW severity/);
+    expect(content, 'audit check must declare advisory-only').toMatch(/advisory only|advisory[, ]/i);
+    expect(content, 'audit must document overlap-declaration check').toMatch(/axiom_overlap/);
+  });
 });
