@@ -4,6 +4,8 @@
 > **Design:** [`docs/designs/2026-05-09-axiom-design-pairing.md`](../designs/2026-05-09-axiom-design-pairing.md)
 > **Iron Law:** No production code without a failing test first.
 > **Test framework:** vitest (existing axiom suite in `tests/`).
+>
+> **Implementation note (2026-05-09, post-review).** This plan originally targeted the vendored `skill-creator` at `axiom/skills/_vendor/skill-creator/` with a `name: _vendor:skill-creator` frontmatter rewrite. The shipped layout moved the vendor to repo-root `vendor/skill-creator/` (outside `skills/`, so the loader never enumerates it) and dropped the frontmatter rewrite — path placement is the structural guarantee instead. Task and verification text below has been updated to the shipped paths; the design doc's parallel post-review note has full context (commit `cd84bff`).
 
 ---
 
@@ -37,7 +39,7 @@ This plan decomposes the design's three deliverables into TDD tasks. Each task f
 | Considered Options | Rationale only — no tasks | — | Covered (informs scope) |
 | Chosen Approach | Option 2 selected | All tasks | Covered |
 | Technical Design > Architecture overview | Three components diagram | T1–T13 | Covered |
-| Technical Design > Naming | `axiom:design`, `axiom:scaffold-invariants`, `_vendor:skill-creator` | T2, T6, T8 | Covered |
+| Technical Design > Naming | `axiom:design`, `axiom:scaffold-invariants`, `vendor/skill-creator` (path-isolated, not a renamed skill) | T2, T6, T8 | Covered |
 | Technical Design > Component A | DR-1: skill exists; DR-3: pairing slots | T2, T3 | Covered |
 | Technical Design > Component A' | DR-2: dimensions.md augmented | T1 | Covered |
 | Technical Design > Component B | DR-5: scaffolder skill | T8, T9 | Covered |
@@ -70,7 +72,7 @@ This plan decomposes the design's three deliverables into TDD tasks. Each task f
 **TDD Steps:**
 1. Fetch `https://github.com/anthropics/skills/blob/main/LICENSE`
 2. Confirm permissive license (MIT / Apache 2.0 / similar) allowing redistribution with attribution
-3. Document outcome in `axiom/skills/_vendor/.license-decision.md` (commit even if vendoring proceeds)
+3. Document outcome in `axiom/vendor/.license-decision.md` (commit even if vendoring proceeds)
 
 **Outcome gate:**
 - **Pass:** continue with T6.
@@ -248,24 +250,24 @@ This plan decomposes the design's three deliverables into TDD tasks. Each task f
 **TDD Steps:**
 1. **[RED]** Write test: `VendorSkillCreator_Files_PresentAndRenamed`
    - File: `tests/vendor.test.ts` (new)
-   - Assertion: `skills/_vendor/skill-creator/SKILL.md` exists; frontmatter `name` is `_vendor:skill-creator` (NOT `skill-creator`); `skills/_vendor/skill-creator/UPSTREAM.md` exists with required fields (`source_url`, `commit_sha`, `sync_date`); `skills/_vendor/skill-creator/LICENSE` exists
+   - Assertion: `vendor/skill-creator/SKILL.md` exists (path-isolated outside `skills/` — frontmatter `name` is unchanged from upstream because the loader never enumerates `vendor/`); `vendor/skill-creator/UPSTREAM.md` exists with required fields (`source_url`, `commit_sha`, `sync_date`); `vendor/skill-creator/LICENSE` exists
    - Expected failure: directory does not exist
    - Run: `npm run test:run` — MUST FAIL
 
 2. **[GREEN]** Vendor the upstream content
    - Source: `https://github.com/anthropics/skills/tree/main/skills/skill-creator`
-   - Destination: `skills/_vendor/skill-creator/`
-   - Rewrite frontmatter `name: skill-creator` → `name: _vendor:skill-creator`
+   - Destination: `vendor/skill-creator/` (repo-root, outside `skills/`)
+   - Frontmatter `name:` left unchanged (path placement, not name rewrite, prevents loader collision)
    - Copy `LICENSE` from upstream root
    - Author `UPSTREAM.md` with source URL, commit SHA, sync date, rewrite-policy note
    - Run: `npm run test:run` — MUST PASS
 
-3. **[REFACTOR]** Cross-check: ensure no existing axiom test claims the underscore-prefixed dir as a "skill" (extend `tests/plugin-structure.test.ts` to exclude `_vendor` if needed)
+3. **[REFACTOR]** Cross-check: ensure no existing axiom test enumerates `vendor/` as a skills root (the test scans `skills/`, so `vendor/` is naturally excluded — verify, no exclusion patch needed)
 
 **Verification:**
 - [ ] Vendor-presence test fails before import
 - [ ] Vendor-presence test passes after import
-- [ ] No existing skill-discovery test treats `_vendor/` as a regular skill dir
+- [ ] No existing skill-discovery test treats `vendor/` as a skills root
 
 **Dependencies:** T0 (license verified).
 **Parallelizable:** Yes (after T0).
@@ -287,7 +289,7 @@ This plan decomposes the design's three deliverables into TDD tasks. Each task f
 
 2. **[GREEN]** Author `.github/workflows/vendor-sync.yml`
    - File: `.github/workflows/vendor-sync.yml`
-   - Steps: checkout, fetch upstream `anthropics/skills`, diff against `skills/_vendor/skill-creator/`, open PR if drift detected (using `peter-evans/create-pull-request`), include diff and updated `UPSTREAM.md` fields
+   - Steps: checkout, fetch upstream `anthropics/skills`, diff against `vendor/skill-creator/`, open PR if drift detected (using `peter-evans/create-pull-request`), include diff and updated `UPSTREAM.md` fields
    - Run on schedule: weekly Mondays 10:00 UTC
    - Run: `npm run test:run` — MUST PASS
 
@@ -525,7 +527,7 @@ New test files added:
 Existing tests extended:
 - `tests/skill-frontmatter.test.ts` — `INVOKABLE_SKILLS` extended with `'design'` and `'scaffold-invariants'`; new T12 audit assertion
 - `tests/dimension-coverage.test.ts` — new T1 design-questions assertion
-- `tests/plugin-structure.test.ts` — `expected` directories extended; `_vendor/` exclusion added
+- `tests/plugin-structure.test.ts` — `expected` directories extended (no `vendor/` exclusion needed; the test scans `skills/`, which doesn't contain `vendor/`)
 - `tests/cross-references.test.ts` — new pairing-contract.md cross-reference
 
 ---

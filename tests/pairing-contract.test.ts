@@ -14,10 +14,15 @@ describe('Pairing Contract', () => {
     expect(existsSync(CONTRACT_PATH)).toBe(true);
     const content = readFileSync(CONTRACT_PATH, 'utf-8');
 
-    // Three slot definitions must be present
-    expect(content, "missing slot: pairs-with").toContain('pairs-with');
-    expect(content, "missing slot: pairs-with-pattern").toContain('pairs-with-pattern');
-    expect(content, "missing slot: axiom_overlap").toContain('axiom_overlap');
+    // Three slot definitions must be present, each independently — boundary-aware
+    // so that `pairs-with-pattern` can't satisfy the `pairs-with` check.
+    // `pairs-with` matches when followed by a non-hyphen boundary (whitespace, end,
+    // backtick, colon, comma, period). `pairs-with-pattern` is matched as the literal
+    // word followed by the same boundary class.
+    const slotBoundary = String.raw`(?![\w-])`;
+    expect(content, 'missing slot: pairs-with').toMatch(new RegExp(String.raw`pairs-with${slotBoundary}`));
+    expect(content, 'missing slot: pairs-with-pattern').toMatch(new RegExp(String.raw`pairs-with-pattern${slotBoundary}`));
+    expect(content, 'missing slot: axiom_overlap').toMatch(new RegExp(String.raw`axiom_overlap${slotBoundary}`));
   });
 
   it('PairingContract_File_HasRequiredSections', () => {

@@ -72,7 +72,19 @@ describe('Dimension Coverage', () => {
     // Split content into per-dimension sections, identified by `## DIM-N:` headers
     const dimSectionRe = /^## (DIM-[1-8]):/gm;
     const matches = [...content.matchAll(dimSectionRe)];
-    expect(matches.length, 'expected 8 DIM-N sections').toBe(8);
+
+    // Each DIM-1..DIM-8 must appear exactly once: set-equality, not just count.
+    // (length === 8 can pass with duplicates + a missing DIM.)
+    const capturedIds = matches.map((m) => m[1]);
+    const expectedIds = ['DIM-1', 'DIM-2', 'DIM-3', 'DIM-4', 'DIM-5', 'DIM-6', 'DIM-7', 'DIM-8'];
+    expect(
+      [...new Set(capturedIds)].sort(),
+      `expected unique DIM-1..DIM-8 sections, got: ${capturedIds.join(', ')}`
+    ).toEqual(expectedIds);
+    expect(
+      capturedIds.length,
+      `expected no duplicate DIM-N headers, got: ${capturedIds.join(', ')}`
+    ).toBe(8);
 
     // For each DIM-N, isolate its section (until next ## DIM- or EOF) and assert it
     // contains a `### Design questions` subsection with at least 3 list items.

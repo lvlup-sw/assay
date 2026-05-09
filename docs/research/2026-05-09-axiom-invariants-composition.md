@@ -172,7 +172,7 @@ The lesson for Proposal B: bias toward plop's lightweight, in-repo, single-purpo
 
 The user's two proposals are not actually competing. They address orthogonal axes:
 
-```
+```text
                 authoring (Q2)
                      ↓
                                      project-specific

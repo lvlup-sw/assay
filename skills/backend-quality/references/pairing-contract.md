@@ -65,7 +65,7 @@ When `axiom:design` runs in a session with `exarchos:design-invariants` loaded, 
 
 A project-specific invariants skill is **compliant** if:
 
-1. Its frontmatter declares `pairs-with: axiom:design`.
+1. Its frontmatter declares `metadata.pairs-with: axiom:design` (nested under `metadata:`, per the canonical position above — top-level `pairs-with:` does not satisfy this rule).
 2. At least one of its invariants declares an `axiom_overlap: DIM-N` field referencing a real axiom dimension (DIM-1..DIM-8).
 3. Its structure follows the archetype: `SKILL.md` + `references/INV-N-<slug>.md` per invariant + `references/deterministic-checks.md` (per `axiom:scaffold-invariants` emit shape).
 
