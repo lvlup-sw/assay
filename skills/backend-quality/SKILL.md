@@ -39,3 +39,7 @@ Verdict computation and health thresholds: `@skills/backend-quality/references/s
 ## Deterministic Checks
 
 Grep patterns and structural checks per dimension: `@skills/backend-quality/references/deterministic-checks.md`
+
+## Pairing Contract
+
+How `axiom:design` composes with project-specific invariants skills via the `pairs-with` frontmatter slot: `@skills/backend-quality/references/pairing-contract.md`

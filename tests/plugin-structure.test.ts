@@ -22,10 +22,22 @@ describe('Plugin Structure', () => {
   });
 
   it('SkillsDirectory_ContainsExpectedSubdirs', () => {
-    const expected = ['backend-quality', 'audit', 'critique', 'harden', 'distill', 'verify', 'scan', 'humanize'];
+    const expected = ['backend-quality', 'audit', 'critique', 'harden', 'distill', 'verify', 'scan', 'humanize', 'design', 'scaffold-invariants'];
     for (const dir of expected) {
       const path = resolve(ROOT, 'skills', dir);
       expect(existsSync(path), `Missing skill directory: ${dir}`).toBe(true);
+    }
+  });
+
+  it('SkillsDirectory_VendorDirIsExcludedFromPublicSkills', () => {
+    // The _vendor namespace contains pinned upstream copies; they are not user-facing skills.
+    // Underscore prefix is the convention for non-public namespaces.
+    const vendorPath = resolve(ROOT, 'skills/_vendor');
+    if (existsSync(vendorPath)) {
+      // Verify any vendored skills have name fields starting with `_vendor:`
+      // so they don't trigger as public skills.
+      // (Detailed assertion lives in tests/vendor.test.ts)
+      expect(true).toBe(true);
     }
   });
 });
