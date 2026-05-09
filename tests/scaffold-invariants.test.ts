@@ -43,6 +43,8 @@ describe('axiom:scaffold-invariants skill body', () => {
     expect(content, 'must have Failure Modes section').toMatch(/^## Failure Modes/m);
     expect(content, 'must document vendored skill-creator missing/stale fallback')
       .toMatch(/Vendored skill-creator (missing|not available|missing or stale)/i);
+    expect(content, 'must document the 30-day staleness rule (DR-9)')
+      .toMatch(/30 days|30-day|older than 30/i);
     expect(content, 'must document existing-output-dir handling')
       .toMatch(/already exists|directory already exists/i);
     expect(content, 'must document zero-invariants edge case')

@@ -50,5 +50,11 @@ describe('Pairing Contract', () => {
     expect(content, 'audit check must declare LOW severity').toMatch(/LOW severity/);
     expect(content, 'audit check must declare advisory-only').toMatch(/advisory only|advisory[, ]/i);
     expect(content, 'audit must document overlap-declaration check').toMatch(/axiom_overlap/);
+
+    // DR-10 specifies TWO distinct checks; both must be documented
+    expect(content, 'audit must document overlap-declaration check (check 1 of 2)')
+      .toMatch(/Overlap declaration|declares.*axiom_overlap.*at least|≥1 axiom_overlap|at least one of its invariants/i);
+    expect(content, 'audit must document overlap-validity check (check 2 of 2)')
+      .toMatch(/Overlap validity|reference (real|valid).*DIM-N|DIM-1 through DIM-8|reference a real dimension/i);
   });
 });

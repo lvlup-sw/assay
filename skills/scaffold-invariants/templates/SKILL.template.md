@@ -1,7 +1,6 @@
 ---
 name: design-invariants
 description: "Audit a design proposal or diff against {{PROJECT_NAME}}'s architectural invariants — {{INVARIANT_SUMMARY_LINE}}. Pairs with /axiom:design — this skill is project-specific (axiom is generic). Triggers: 'check invariants', 'design conformance', or /design-invariants."
-pairs-with: axiom:design
 metadata:
   author: {{PROJECT_NAME}}
   version: 0.1.0
@@ -59,7 +58,7 @@ Match axiom's vocabulary (HIGH / MEDIUM / LOW) so reviewers don't context-switch
 
 The seam: axiom asks *"is this code well-engineered?"*; this skill asks *"does this design respect {{PROJECT_NAME}}'s load-bearing invariants?"* A design can be axiom-clean and still violate a project invariant.
 
-For the full pairing protocol, see `axiom/skills/backend-quality/references/pairing-contract.md`.
+For the full pairing protocol, see the axiom plugin's pairing contract at [`@skills/backend-quality/references/pairing-contract.md`](https://github.com/lvlup-sw/axiom/blob/main/skills/backend-quality/references/pairing-contract.md) (GitHub link; resolves regardless of where this generated skill is installed).
 
 ## Source
 

@@ -60,6 +60,16 @@ describe('Vendored skill-creator (vendor/skill-creator)', () => {
     expect(content, 'must declare full-directory vendoring policy').toMatch(/verbatim|full[\- ]directory|unmodified/i);
   });
 
+  it('Vendor_PackageJsonFilesArray_IncludesVendor', () => {
+    // Regression check: vendor/ must ship in the npm tarball, otherwise users who
+    // install via `npm install @lvlup-sw/axiom` would not get the vendored content.
+    const pkgPath = resolve(ROOT, 'package.json');
+    expect(existsSync(pkgPath), 'package.json missing').toBe(true);
+    const pkg = JSON.parse(readFileSync(pkgPath, 'utf-8'));
+    expect(Array.isArray(pkg.files), 'package.json files must be an array').toBe(true);
+    expect(pkg.files, 'package.json files: must include vendor').toContain('vendor');
+  });
+
   it('Vendor_RelativeReferences_AllResolveLocally', () => {
     // The SKILL.md references files like agents/grader.md, references/schemas.md, etc.
     // With full-directory vendoring, these must all resolve.

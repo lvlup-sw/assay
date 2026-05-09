@@ -6,11 +6,13 @@ This contract is the seam between the cross-domain dimension taxonomy and any on
 
 ## Frontmatter slots
 
-| Slot | Where | Type | Required | Meaning |
-|------|-------|------|----------|---------|
-| `pairs-with` | project skill frontmatter | string | yes | Names the axiom skill this pairs with. Currently the only valid value is `axiom:design`. Future axiom skills may add their own pairing namespaces. |
-| `pairs-with-pattern` | axiom skill frontmatter | glob | optional | Pattern axiom recognizes for paired project skills. Example: `<project>:*-invariants`. Documentation hint, not enforced. |
+| Slot | Where (canonical position) | Type | Required | Meaning |
+|------|---------------------------|------|----------|---------|
+| `pairs-with` | project skill frontmatter, **nested under `metadata:`** | string | yes | Names the axiom skill this pairs with. Currently the only valid value is `axiom:design`. Future axiom skills may add their own pairing namespaces. Example: `metadata.pairs-with: axiom:design`. |
+| `pairs-with-pattern` | axiom skill frontmatter, **nested under `metadata:`** | glob | optional | Pattern axiom recognizes for paired project skills. Example: `metadata.pairs-with-pattern: <project>:*-invariants`. Documentation hint, not enforced. |
 | `axiom_overlap` | per-invariant in project skill body or per-finding in output | `DIM-N` (one of `DIM-1`..`DIM-8`) | optional | Names the axiom dimension this invariant specializes. Multiple overlaps are permitted (an INV may specialize both DIM-1 Topology and DIM-2 Observability). Omit when an invariant has no generic counterpart. |
+
+**Canonical position note.** All `pairs-with` and `pairs-with-pattern` slots live nested under `metadata:` in the frontmatter, matching the existing `exarchos:design-invariants` archetype. Top-level placement (`pairs-with:` directly under `---`) is **not** the canonical form and discovery implementations may not honor it.
 
 ## Ordering rule
 
@@ -32,19 +34,21 @@ This mirrors ATAM's utility tree: leaves reference the branch they specialize; b
 
 ## Worked example
 
-`exarchos:design-invariants` is the canonical compliant project skill. Its frontmatter declares the pairing:
+`exarchos:design-invariants` is the canonical compliant project skill. Its frontmatter declares the pairing under `metadata`:
 
 ```yaml
 ---
 name: design-invariants
 description: "Audit a design proposal or diff against Exarchos's architectural invariants ..."
-pairs-with: axiom:design
 metadata:
   author: exarchos
   version: 0.1.0
   category: review
+  pairs-with: axiom:design
 ---
 ```
+
+> **Migration note (2026-05-09).** As of this contract's authoring, `exarchos:design-invariants` declares `metadata.pairs-with: axiom:backend-quality` (the foundation reference, pre-rename). The migration to `metadata.pairs-with: axiom:design` is tracked as a coordination PR against the exarchos repo (see this design's Definition of Done) and is **out of scope for axiom alone**. Until that PR lands, `axiom:design` discovery falls back to generic-only output for exarchos.
 
 Its complementarity matrix declares per-invariant overlap with axiom dimensions:
 
