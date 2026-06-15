@@ -7,8 +7,8 @@ This directory is a **verbatim full-directory vendor** of `anthropics/skills/ski
 | Field | Value |
 |-------|-------|
 | **source_url** | https://github.com/anthropics/skills/tree/main/skills/skill-creator |
-| **commit_sha** | `f458cee31a7577a47ba0c9a101976fa599385174` |
-| **sync_date** | 2026-05-09 |
+| **commit_sha** | `57546260929473d4e0d1c1bb75297be2fdfa1949` |
+| **sync_date** | 2026-06-15 |
 | **upstream_license** | Apache License 2.0 (see LICENSE) |
 
 ## What's vendored
